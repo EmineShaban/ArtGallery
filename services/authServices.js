@@ -1,7 +1,7 @@
 const User = require('../models/User')
 const bcrypt = require('bcrypt')
-
-
+const jwt = require('jsonwebtoken')
+const SECRET = require('../config/env')
 exports.create = (userData) => User.create(userData)
 
 exports.login = async (username, password) => {
@@ -18,4 +18,20 @@ exports.login = async (username, password) => {
 
     }
 
+
+    return createToken(user)
+}
+exports.createToken = async(user) => {
+    const payload = { _id: user._id, username: user.username, address: user.address}
+    const options = {expiresIn: '2d'}
+   return new Promise((resolve, reject) =>{
+        jwt.sign(payload, SECRET, options, (err, decodeToken) => {
+            if(err) {
+                return reject(err)
+            }
+
+            resolve(decodeToken)
+        })
+
+    })
 }
