@@ -3,11 +3,13 @@ const router = require('express').Router()
 const authServices = require('../services/authServices')
 
 router.get('/login', (req, res) =>{
-    res.render('auth/login')
+    res.render('auth/login');
 })
-router.post('/login', (req, res) =>{
-    res.render('auth/login')
-})
+router.post('/login', async (req, res) =>{
+    const {username, password} = req.body
+   const user = await authServices.login(username, password)
+    // res.render('auth/login')
+});
 
 
 router.get('/register', (req, res) =>{
