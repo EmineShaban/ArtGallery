@@ -1,14 +1,15 @@
 const router = require('express').Router()
-
+const { isAuth, isGueat } = require('../middlewares/authMiddleware')
+const {getErrorMessage} = require('../utils/errorHelper')
 const authServices = require('../services/authServices')
 
 const { COOKIE_SESSION_NAME } = require('../constants')
 
 
-router.get('/login', (req, res) =>{
+router.get('/login', isGueat, (req, res) =>{
     res.render('auth/login');
 })
-router.post('/login', async (req, res) =>{
+router.post('/login', isGueat, async (req, res) =>{
     const {username, password} = req.body
    const user = await authServices.login(username, password)
    const token = await authServices.createToken(user)
@@ -18,11 +19,11 @@ router.post('/login', async (req, res) =>{
 });
 
 
-router.get('/register', (req, res) =>{
+router.get('/register', isGueat, (req, res) =>{
     res.render('auth/register')
 })
 
-router.post('/register', async (req, res) =>{
+router.post('/register', isGueat, async (req, res) =>{
     const { password, repeatPassword, ...userData} = req.body
 
     if (password !== repeatPassword) {
@@ -37,16 +38,17 @@ router.post('/register', async (req, res) =>{
        res.cookie(COOKIE_SESSION_NAME, token, {httpOnly: true})
         res.redirect('/')
     } catch (error){
-        return res.render('auth/register', {error: "db error"})
+        return res.render('auth/register', {error: getErrorMessage(error)})
 
     }
 
     
 })
-router.get('/logout', (req, res) =>{
+router.get('/logout', isAuth, (req, res) =>{
     res.clearCookie(COOKIE_SESSION_NAME)
     res.redirect('/')
 })
+
 
 
 

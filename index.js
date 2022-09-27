@@ -6,7 +6,7 @@ let { PORT } = require('./config/env')
 const routes = require('./routes')
 const { dbinit } = require('./config/db')
 const { auth } = require('./middlewares/authMiddleware')
-// const {auth} = require('./middlewares/authMiddleware')
+const {errorHandler} = require('./middlewares/errorHandlerMiddleware')
 
 
 
@@ -22,6 +22,7 @@ app.use(express.static('public'))
 app.use(cookieParser())
 app.use(auth)
 app.use(routes)
+app.use(errorHandler)
 
 
 
