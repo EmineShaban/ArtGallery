@@ -2,6 +2,9 @@ const router = require('express').Router()
 
 const authServices = require('../services/authServices')
 
+const { COOKIE_SESSION_NAME } = require('../constants')
+
+
 router.get('/login', (req, res) =>{
     res.render('auth/login');
 })
@@ -9,7 +12,9 @@ router.post('/login', async (req, res) =>{
     const {username, password} = req.body
    const user = await authServices.login(username, password)
    const token = await authServices.createToken(user)
-    // res.render('auth/login')
+
+   res.cookie(COOKIE_SESSION_NAME, token)
+    res.redirect('/')
 });
 
 
@@ -26,8 +31,11 @@ router.post('/register', async (req, res) =>{
 
 
     try{
-        await authServices.create({password, ...userData})
-        res.redirect('/login')
+       const createdUser =  await authServices.create({password, ...userData})
+       const token = await authServices.createToken(createdUser)
+
+       res.cookie(COOKIE_SESSION_NAME, token)
+        res.redirect('/')
     } catch (error){
         return res.render('auth/register', {error: "db error"})
 
