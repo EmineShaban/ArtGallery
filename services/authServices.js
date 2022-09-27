@@ -19,19 +19,18 @@ exports.login = async (username, password) => {
 
     }
 
-
     return user
 }
-exports.createToken = async(user) => {
+exports.createToken = (user) => {
     const payload = { _id: user._id, username: user.username, address: user.address}
     const options = {expiresIn: '2d'}
    return new Promise((resolve, reject) =>{
-        jwt.sign(payload, SECRET, options, (err, decodeToken) => {
+        jwt.sign(payload, SECRET, options, (err, decodedToken) => {
             if(err) {
                 return reject(err)
             }
 
-            resolve(decodeToken)
+            resolve(decodedToken)
         })
 
     })
