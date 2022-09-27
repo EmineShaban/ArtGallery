@@ -3,6 +3,10 @@ let hbs = require('express-handlebars')
 
 let { PORT } = require('./config/env')
 const routes = require('./routes')
+const { dbinit } = require('./config/db')
+
+
+
 const app = express()
 
 app.engine('hbs', hbs.engine({
@@ -21,4 +25,5 @@ app.use(routes)
 
 
 
+dbinit()
 app.listen(PORT, () => console.log(`Server is running on port ${PORT}`))
