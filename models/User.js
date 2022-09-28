@@ -13,7 +13,11 @@ const userSchema = new mongoose.Schema({
     address: {
         type: String,
         required: true,
-    }
+    },
+    publication: {
+        type: mongoose.Types.ObjectId,
+        ref: 'Publication',
+    },
 
 })
 
