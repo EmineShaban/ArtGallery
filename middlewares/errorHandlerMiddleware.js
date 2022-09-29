@@ -1,4 +1,5 @@
 
+const { getErrorMessage } = require('../utils/errorHelper')
 
 exports.errorHandler = (err, req, res, next) =>{
 const status = err.status || 404
