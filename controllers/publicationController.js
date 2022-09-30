@@ -38,7 +38,7 @@ router.post(
     isPublicationAuthor,
     async (req, res) => {
         try {
-            await publicationServices.updateOne(req.params.publicationID, req.body)
+            await publicationServices.update(req.params.publicationID, req.body)
             res.redirect(`/publication/${req.params.publicationID}/details`)
         } catch (error) {
             res.render('publication/edit', { ...req.body, error: getErrorMessage(error) })
