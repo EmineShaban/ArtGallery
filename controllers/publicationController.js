@@ -3,6 +3,8 @@ const router = require('express').Router()
 const { isAuth } = require('../middlewares/authMiddleware')
 const { isPublicationAuthor, preloadPublication } = require('../middlewares/publicationMiddleware')
 const publicationServices = require('../services/publicationServices')
+const userService = require('../services/userService')
+
 const { getErrorMessage } = require('../utils/errorHelper')
 
 router.get('/', async (req, res) => {
@@ -15,7 +17,16 @@ router.get(
     async (req, res) => {
         const publication = await publicationServices.getOneDetailed(req.params.publicationID).lean()
         const isAuthor = publication.author._id == req.user?._id
-        res.render('publication/details', { ...publication, isAuthor })
+        // const isShared = publication.usersShared.includes(req.user._id) 
+        const isShared = publication.usersShared.find(element => element == req.user._id) == req.user._id
+        // console.log(isShared22)
+
+        // includes(req.user._id)
+        // console.log(publication.usersShared.find(element => element == req.user._id))
+
+        // console.log(req.user._id)
+
+        res.render('publication/details', { ...publication, isAuthor, isShared})
     })
 
 
@@ -62,8 +73,10 @@ router.get('/create', isAuth, (req, res) => {
 
 
 router.post('/create', isAuth, async (req, res) => {
+    
     try {
-        const createPublication = await publicationServices.create({ ...req.body, author: req.user._id })
+        const publication = await publicationServices.create({ ...req.body, author: req.user._id })
+        await userService.addPublication(req.user._id, publication._id)
         res.redirect('/publication')
 
     } catch (error) {
@@ -71,5 +84,19 @@ router.post('/create', isAuth, async (req, res) => {
     }
 
 })
+
+router.get(
+    '/:publicationID/share',
+    isAuth,
+    async (req, res) => {
+       const publication =  await publicationServices.getOne(req.params.publicationID)
+       const user = await userService.getOne(req.user._id)
+       publication.usersShared.push(req.user._id)
+       user.shares.push(publication)
+       await publication.save()
+       await user.save()
+        res.redirect('/')
+    })
+
 
 module.exports = router
