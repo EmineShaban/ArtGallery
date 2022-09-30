@@ -14,10 +14,14 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    publication: {
+    publication: [{
         type: mongoose.Types.ObjectId,
         ref: 'Publication',
-    },
+    }],
+    shares: [{
+        type: mongoose.Types.ObjectId,
+        ref: 'Publication',
+    }],
 
 })
 
